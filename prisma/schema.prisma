@@ -1,0 +1,92 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id               String     @id @default(uuid())
+  name             String
+  email            String     @unique
+  pending_email    String?
+  password_hash    String
+  is_verified      Boolean    @default(false)
+  created_at       DateTime   @default(now())
+  last_login       DateTime?
+  day_start_time   String     @default("06:00")
+  timezone         String?
+
+  categories       Category[]
+  sessions         Session[]
+  targets          Target[]
+  streak           Streak?
+  cycle_notes      CycleNote[]
+}
+
+model Category {
+  id         String   @id @default(uuid())
+  user_id    String
+  user       User     @relation(fields: [user_id], references: [id])
+  name          String
+  emoji         String
+  color         String
+  category_type String   @default("primary") // "primary" | "essential" | "scattered"
+  is_default    Boolean  @default(false)
+  created_at    DateTime @default(now())
+
+  sessions   Session[]
+  targets    Target[]
+}
+
+model Session {
+  id               String    @id @default(uuid())
+  user_id          String
+  user             User      @relation(fields: [user_id], references: [id])
+  category_id      String?
+  category         Category? @relation(fields: [category_id], references: [id])
+  category_type    String?   // "primary" | "essential" | "scattered"
+  title            String?
+  start_time       DateTime
+  end_time         DateTime? // Null means active
+  duration_minutes Int?
+  date             DateTime  // For easy daily aggregation
+}
+
+model Target {
+  id             String    @id @default(uuid())
+  user_id        String
+  user           User      @relation(fields: [user_id], references: [id])
+  category_id    String?   // Null means global KT target
+  category       Category? @relation(fields: [category_id], references: [id])
+  target_minutes Int
+  period_type    String    // 'daily' | 'weekly'
+  created_at     DateTime  @default(now())
+}
+
+model Streak {
+  id                   String    @id @default(uuid())
+  user_id              String    @unique
+  user                 User      @relation(fields: [user_id], references: [id])
+  is_enabled           Boolean   @default(true)
+  target_kt            Int       @default(0)
+  category_id          String?
+  current_streak       Int       @default(0)
+  longest_streak       Int       @default(0)
+  last_completed_date  DateTime?
+  last_evaluated_cycle DateTime?
+}
+
+model CycleNote {
+  id         String   @id @default(uuid())
+  user_id    String
+  user       User     @relation(fields: [user_id], references: [id])
+  cycle_date String
+  note       String
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  @@unique([user_id, cycle_date])
+}

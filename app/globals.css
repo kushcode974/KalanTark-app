@@ -1,0 +1,288 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: #050810;
+    --foreground: #FFFFFF;
+  }
+}
+
+/* ============================================
+   ATMOSPHERE LAYER — Living Background
+   ============================================ */
+body {
+  color: var(--foreground);
+  background: var(--background);
+  margin: 0;
+  padding: 0;
+  position: relative;
+  overflow-x: hidden;
+}
+
+/* Deep multi-stop gradient base */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: -3;
+  background:
+    radial-gradient(ellipse 80% 60% at 20% 80%, rgba(59, 130, 246, 0.08) 0%, transparent 60%),
+    radial-gradient(ellipse 70% 50% at 80% 20%, rgba(139, 92, 246, 0.06) 0%, transparent 60%),
+    radial-gradient(ellipse 60% 80% at 50% 50%, rgba(20, 184, 166, 0.04) 0%, transparent 70%),
+    linear-gradient(180deg, #030712 0%, #0a0f1e 40%, #0f172a 70%, #050810 100%);
+  pointer-events: none;
+}
+
+/* Animated floating glow orbs */
+body::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: -2;
+  background:
+    radial-gradient(circle 500px at var(--orb1-x, 25%) var(--orb1-y, 70%), rgba(59, 130, 246, 0.08) 0%, transparent 70%),
+    radial-gradient(circle 400px at var(--orb2-x, 75%) var(--orb2-y, 30%), rgba(139, 92, 246, 0.07) 0%, transparent 70%);
+  animation: orbDrift 60s ease-in-out infinite;
+  pointer-events: none;
+}
+
+@keyframes orbDrift {
+
+  0%,
+  100% {
+    --orb1-x: 25%;
+    --orb1-y: 70%;
+    --orb2-x: 75%;
+    --orb2-y: 30%;
+  }
+
+  33% {
+    --orb1-x: 40%;
+    --orb1-y: 50%;
+    --orb2-x: 60%;
+    --orb2-y: 60%;
+  }
+
+  66% {
+    --orb1-x: 20%;
+    --orb1-y: 40%;
+    --orb2-x: 80%;
+    --orb2-y: 50%;
+  }
+}
+
+/* Fallback smooth orb animation for browsers without @property */
+@supports not (font-size: 1cqi) {
+  body::after {
+    animation: orbDriftFallback 60s ease-in-out infinite;
+  }
+
+  @keyframes orbDriftFallback {
+
+    0%,
+    100% {
+      opacity: 0.8;
+      transform: translateX(0) translateY(0);
+    }
+
+    33% {
+      opacity: 1;
+      transform: translateX(5%) translateY(-3%);
+    }
+
+    66% {
+      opacity: 0.9;
+      transform: translateX(-3%) translateY(5%);
+    }
+  }
+}
+
+/* Skeleton shimmer animation */
+@keyframes shimmer {
+  0% {
+    background-position: 200% 0;
+  }
+
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+.animate-shimmer {
+  animation: shimmer 1.5s infinite;
+}
+
+/* ============================================
+   GLASSMORPHISM CARD SYSTEM
+   ============================================ */
+@layer utilities {
+
+  /* Hero cards — Timer, Streak, Cycle Progress */
+  .glass-hero {
+    background: rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.06),
+      0 8px 32px rgba(0, 0, 0, 0.4),
+      0 0 0 1px rgba(255, 255, 255, 0.05);
+  }
+
+  /* Data cards — Charts, Reports, Panels */
+  .glass-data {
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0.02) 100%);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.05),
+      0 4px 24px rgba(0, 0, 0, 0.3);
+  }
+
+  /* Interactive cards — Switchboard tiles */
+  .glass-interactive {
+    background: rgba(255, 255, 255, 0.04);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04);
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .glass-interactive:hover {
+    background: rgba(255, 255, 255, 0.08);
+    border-color: rgba(255, 255, 255, 0.18);
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.06),
+      0 8px 32px rgba(0, 0, 0, 0.3);
+    transform: translateY(-2px) scale(1.02);
+  }
+
+  /* Gradient divider line */
+  .gradient-divider {
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.08), transparent);
+  }
+
+  /* Sidebar glass */
+  .glass-sidebar {
+    background: rgba(8, 12, 20, 0.85);
+    backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
+    border-right: 1px solid rgba(255, 255, 255, 0.05);
+  }
+
+  /* Topbar glass */
+  .glass-topbar {
+    background: rgba(8, 12, 20, 0.7);
+    backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
+  }
+}
+
+/* ============================================
+   SCROLLBAR
+   ============================================*/
+/* Webkit browsers */
+::-webkit-scrollbar {
+  width: 4px;
+  height: 4px;
+}
+
+::-webkit-scrollbar-track {
+  background: #021024;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #1a2744;
+  border-radius: 999px;
+  transition: background 200ms ease;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #4a9eff;
+}
+
+/* Firefox */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: #1a2744 #021024;
+}
+
+/* Removes spin buttons on number inputs */
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* ============================================
+   MOBILE RESPONSIVENESS (320px - 767px)
+   ============================================ */
+@media (max-width: 767px) {
+  :root {
+    --card-padding: 16px;
+  }
+
+  body {
+    font-size: 15px; /* Slight scale down */
+  }
+
+  /* Prevent any horizontal overflow */
+  html, body {
+    max-width: 100vw;
+    overflow-x: hidden;
+  }
+
+  /* Main content area padding for fixed topbar */
+  main {
+    padding-top: 64px !important;
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+  }
+
+  /* Global card padding reset */
+  .glass-hero, .glass-data, .glass-interactive {
+    padding: var(--card-padding) !important;
+    border-radius: 12px;
+  }
+
+  /* Disable 3D Tilt and Shine on mobile */
+  .tilt-shine {
+    display: none !important;
+  }
+
+  [style*="rotateX"], [style*="rotateY"] {
+    transform: none !important;
+  }
+
+  /* Touch Targets */
+  button, a, input, select {
+    min-height: 44px;
+  }
+
+  /* Grid scaling */
+  .grid-cols-2, .grid-cols-3, .grid-cols-4 {
+    grid-template-columns: repeat(1, minmax(0, 1fr)) !important;
+  }
+
+  /* Utility for hidden on desktop/mobile */
+  .mobile-only { display: block !important; }
+  .desktop-only { display: none !important; }
+
+  .mobile-hide { display: none !important; }
+  .mobile-show { display: block !important; }
+}
+
+@layer utilities {
+  @media (min-width: 768px) {
+    .mobile-only { display: none !important; }
+    .desktop-only { display: block !important; }
+
+    .mobile-hide { display: block !important; }
+    .mobile-show { display: none !important; }
+  }
+}

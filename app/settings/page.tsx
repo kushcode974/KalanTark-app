@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { fetchWithAuth } from '@/lib/api';
+import { fetchWithAuth, getToken } from '@/lib/api';
 import { Sidebar, Topbar, MobileSidebar } from '@/components/Layout';
 import { PageTransition } from '@/components/PageTransition';
 import { TiltCard } from '@/components/TiltCard';
@@ -36,7 +36,7 @@ export default function SettingsPage() {
     const [showPasswordSection, setShowPasswordSection] = useState(false);
 
     useEffect(() => {
-        const token = localStorage.getItem('kalantark_token');
+        const token = getToken();
         if (!token) { router.push('/login'); return; }
 
         const loadSettings = async () => {

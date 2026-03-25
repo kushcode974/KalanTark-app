@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { fetchWithAuth } from '@/lib/api';
+import { fetchWithAuth, getToken } from '@/lib/api';
 import { Sidebar, Topbar, MobileSidebar } from '@/components/Layout';
 import { ProfileSkeleton, ErrorDisplay } from '@/components/SkeletonBlock';
 import { PageTransition } from '@/components/PageTransition';
@@ -53,7 +53,7 @@ export default function ProfilePage() {
     const [isLoading, setIsLoading] = useState(true);
 
     const loadData = async () => {
-        const token = localStorage.getItem('kalantark_token');
+        const token = getToken();
         if (!token) return router.push('/login');
 
         try {

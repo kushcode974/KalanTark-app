@@ -472,7 +472,12 @@ export default function LoginPage() {
             });
             const data = await res.json();
             if (res.ok) {
+                // Store in both localStorage and a persistent cookie for mobile webview survival
                 localStorage.setItem('kalantark_token', data.token);
+                
+                const maxAge = rememberMe ? 60 * 60 * 24 * 30 : 60 * 60 * 24 * 7; // 30 days or 7 days
+                document.cookie = `kalantark_token=${data.token}; path=/; max-age=${maxAge}; SameSite=Lax`;
+
                 setLoginSuccess(true);
                 setTimeout(() => router.push('/dashboard'), 1200);
             } else {

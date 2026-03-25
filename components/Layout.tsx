@@ -6,7 +6,7 @@ import { usePathname } from 'next/navigation';
 import { LayoutDashboard, Activity, Target, Flame, Users, LogOut, Settings, UserCircle, Menu, X, BookOpen } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { SettingsModal } from './SettingsModal';
-import { fetchWithAuth } from '@/lib/api';
+import { fetchWithAuth, getToken } from '@/lib/api';
 import { getMilestone } from '@/lib/utils/milestone';
 import { AnimatedNumber } from './AnimatedNumber';
 
@@ -364,7 +364,7 @@ export function Topbar() {
             if (isPolling) return; // prevent race condition from overlapping polls
             isPolling = true;
 
-            const token = localStorage.getItem('kalantark_token');
+            const token = getToken();
             if (!token) { isPolling = false; return; }
 
             try {
@@ -437,6 +437,7 @@ export function Topbar() {
     const handleLogout = () => {
         localStorage.removeItem('kalantark_token');
         sessionStorage.removeItem('kt_user_cache');
+        document.cookie = 'kalantark_token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT';
         window.location.href = '/login';
     };
 

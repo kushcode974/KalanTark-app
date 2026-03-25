@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { fetchWithAuth } from '@/lib/api';
+import { fetchWithAuth, getToken } from '@/lib/api';
 import { Sidebar, Topbar, MobileSidebar } from '@/components/Layout';
 import { ProtocolPanel } from '@/components/ProtocolPanel';
 import { AnimatePresence, motion } from 'framer-motion';
@@ -44,7 +44,7 @@ export default function DashboardPage() {
     const router = useRouter();
 
     const loadData = async () => {
-        const token = localStorage.getItem('kalantark_token');
+        const token = getToken();
         if (!token) return router.push('/login');
 
         const catRes = await fetchWithAuth('/api/categories');

@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { fetchWithAuth } from '@/lib/api';
+import { fetchWithAuth, getToken } from '@/lib/api';
 import { Sidebar, Topbar, MobileSidebar } from '@/components/Layout';
 import { ProtocolPanel } from '@/components/ProtocolPanel';
 import { AnimatePresence, motion } from 'framer-motion';
@@ -32,7 +32,11 @@ export default function DashboardPage() {
 
     // UI States
     const [isInitiated, setIsInitiated] = useState(false);
-    const [isLoading, setIsLoading] = useState(true);
+    // If token already exists, skip loading state — show app immediately
+    const [isLoading, setIsLoading] = useState(() => {
+        if (typeof window === 'undefined') return true;
+        return !getToken(); // only show loading if no token at all
+    });
 
     // Edit Modal States
     const [editingCategory, setEditingCategory] = useState<Category | null>(null);
@@ -44,8 +48,9 @@ export default function DashboardPage() {
     const router = useRouter();
 
     const loadData = async () => {
-        const token = localStorage.getItem('kalantark_token');
+        const token = getToken();
         if (!token) return router.push('/login');
+        // Don't block render with loading if we already have a token (app reopen)
 
         const catRes = await fetchWithAuth('/api/categories');
         if (catRes.ok) {

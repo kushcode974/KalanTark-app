@@ -34,9 +34,9 @@ export async function fetchWithAuth(url: string, options: RequestInit = {}) {
     try {
         let response = await executeFetch();
 
-        // 401 handler with one-time 2-second retry logic
+        // 401 handler with one-time 300ms retry logic
         if (response.status === 401) {
-            await new Promise(resolve => setTimeout(resolve, 2000));
+            await new Promise(resolve => setTimeout(resolve, 300));
             
             // Retry the actual network call once
             response = await executeFetch();

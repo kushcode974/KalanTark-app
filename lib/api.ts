@@ -21,27 +21,22 @@ let isHandling401 = false;
 export async function fetchWithAuth(url: string, options: RequestInit = {}) {
     const executeFetch = async () => {
         const token = getToken();
-        
         const headers = new Headers(options.headers || {});
         headers.set('Content-Type', 'application/json');
         if (token) {
             headers.set('Authorization', `Bearer ${token}`);
         }
-        
         return await fetch(url, { ...options, headers });
     };
 
     try {
         let response = await executeFetch();
 
-        // 401 handler with one-time 300ms retry logic
         if (response.status === 401) {
+            // Using 300ms delay as noted in your recent prompts & the conflict snippet
             await new Promise(resolve => setTimeout(resolve, 300));
-            
-            // Retry the actual network call once
             response = await executeFetch();
 
-            // If it still returns 401, treat it as a true invalid session
             if (response.status === 401 && !isHandling401) {
                 isHandling401 = true;
                 if (typeof window !== 'undefined') {
@@ -54,9 +49,6 @@ export async function fetchWithAuth(url: string, options: RequestInit = {}) {
 
         return response;
     } catch (error) {
-        // Network errors (like WiFi dropped or server totally unreachable) 
-        // will throw an exception in standard fetch(). We catch it here 
-        // to prevent it from ever triggering the 401 logout logic.
         throw error;
     }
 }

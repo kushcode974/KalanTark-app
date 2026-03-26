@@ -1,11 +1,22 @@
 const rateLimitMap = new Map<string, { count: number; resetTime: number }>();
 
+let lastCleanup = Date.now();
+
 export function rateLimit(
   identifier: string,
   maxRequests: number,
   windowMs: number
 ): { success: boolean; remaining: number } {
   const now = Date.now();
+
+  // Perform cleanup every 10 minutes, triggered by a request
+  if (now - lastCleanup > 10 * 60 * 1000) {
+    for (const [key, value] of rateLimitMap.entries()) {
+      if (now > value.resetTime) rateLimitMap.delete(key);
+    }
+    lastCleanup = now;
+  }
+
   const record = rateLimitMap.get(identifier);
 
   if (!record || now > record.resetTime) {
@@ -20,11 +31,3 @@ export function rateLimit(
   record.count++;
   return { success: true, remaining: maxRequests - record.count };
 }
-
-// Clean up old entries every 10 minutes to prevent memory leaks
-setInterval(() => {
-  const now = Date.now();
-  for (const [key, value] of rateLimitMap.entries()) {
-    if (now > value.resetTime) rateLimitMap.delete(key);
-  }
-}, 10 * 60 * 1000);

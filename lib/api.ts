@@ -33,7 +33,7 @@ export async function fetchWithAuth(url: string, options: RequestInit = {}) {
         let response = await executeFetch();
 
         if (response.status === 401) {
-            // Using 300ms delay as noted in your recent prompts & the conflict snippet
+            // Using 300ms delay for retry logic
             await new Promise(resolve => setTimeout(resolve, 300));
             response = await executeFetch();
 

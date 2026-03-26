@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { fetchWithAuth } from '@/lib/api';
+import { fetchWithAuth, getToken } from '@/lib/api';
 import { Sidebar, Topbar, MobileSidebar } from '@/components/Layout';
 import { ProfileSkeleton, ErrorDisplay } from '@/components/SkeletonBlock';
 import { PageTransition } from '@/components/PageTransition';
@@ -50,10 +50,14 @@ export default function ProfilePage() {
     useEffect(() => setMounted(true), []);
 
     const [stats, setStats] = useState<ProfileStats | null>(null);
-    const [isLoading, setIsLoading] = useState(true);
+    // If token already exists, skip loading — show page instantly on app reopen
+    const [isLoading, setIsLoading] = useState(() => {
+        if (typeof window === 'undefined') return true;
+        return !getToken();
+    });
 
     const loadData = async () => {
-        const token = localStorage.getItem('kalantark_token');
+        const token = getToken();
         if (!token) return router.push('/login');
 
         try {

@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { fetchWithAuth } from '@/lib/api';
+import { fetchWithAuth, getToken } from '@/lib/api';
 import { Sidebar, Topbar, MobileSidebar } from '@/components/Layout';
 import { PageTransition } from '@/components/PageTransition';
 import { TiltCard } from '@/components/TiltCard';
@@ -32,11 +32,15 @@ export default function SettingsPage() {
     // States
     const [isDeleting, setIsDeleting] = useState(false);
     const [deleteConfirm, setDeleteConfirm] = useState('');
-    const [isLoading, setIsLoading] = useState(true);
+    // If token already exists, skip loading — show page instantly on app reopen
+    const [isLoading, setIsLoading] = useState(() => {
+        if (typeof window === 'undefined') return true;
+        return !getToken();
+    });
     const [showPasswordSection, setShowPasswordSection] = useState(false);
 
     useEffect(() => {
-        const token = localStorage.getItem('kalantark_token');
+        const token = getToken();
         if (!token) { router.push('/login'); return; }
 
         const loadSettings = async () => {

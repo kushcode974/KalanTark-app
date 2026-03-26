@@ -16,25 +16,47 @@ export function getToken(): string | null {
     return token;
 }
 
+let isHandling401 = false;
+
 export async function fetchWithAuth(url: string, options: RequestInit = {}) {
-    const token = getToken();
-
-    const headers = new Headers(options.headers || {});
-    headers.set('Content-Type', 'application/json');
-    if (token) {
-        headers.set('Authorization', `Bearer ${token}`);
-    }
-
-    const response = await fetch(url, { ...options, headers });
-
-    // Only redirect to /login on explicit 401 — never on network errors or app re-open
-    if (response.status === 401) {
-        if (typeof window !== 'undefined') {
-            localStorage.removeItem('kalantark_token');
-            document.cookie = 'kalantark_token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT';
-            window.location.href = '/login';
+    const executeFetch = async () => {
+        const token = getToken();
+        
+        const headers = new Headers(options.headers || {});
+        headers.set('Content-Type', 'application/json');
+        if (token) {
+            headers.set('Authorization', `Bearer ${token}`);
         }
-    }
+        
+        return await fetch(url, { ...options, headers });
+    };
 
-    return response;
+    try {
+        let response = await executeFetch();
+
+        // 401 handler with one-time 2-second retry logic
+        if (response.status === 401) {
+            await new Promise(resolve => setTimeout(resolve, 2000));
+            
+            // Retry the actual network call once
+            response = await executeFetch();
+
+            // If it still returns 401, treat it as a true invalid session
+            if (response.status === 401 && !isHandling401) {
+                isHandling401 = true;
+                if (typeof window !== 'undefined') {
+                    localStorage.removeItem('kalantark_token');
+                    document.cookie = 'kalantark_token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT';
+                    window.location.href = '/login';
+                }
+            }
+        }
+
+        return response;
+    } catch (error) {
+        // Network errors (like WiFi dropped or server totally unreachable) 
+        // will throw an exception in standard fetch(). We catch it here 
+        // to prevent it from ever triggering the 401 logout logic.
+        throw error;
+    }
 }

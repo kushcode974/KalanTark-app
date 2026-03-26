@@ -2,7 +2,7 @@
 
 import { useEffect, useState, useRef, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
-import { fetchWithAuth } from '@/lib/api';
+import { fetchWithAuth, getToken } from '@/lib/api';
 import { Sidebar, Topbar, MobileSidebar } from '@/components/Layout';
 import { PageTransition } from '@/components/PageTransition';
 import { getMilestone, MILESTONES } from '@/lib/utils/milestone';
@@ -303,7 +303,11 @@ export default function AboutPage() {
         const load = async () => {
             try {
                 const res = await fetchWithAuth('/api/profile/stats');
-                if (res.status === 401) return router.push('/login');
+                if (res.status === 401) {
+                    await new Promise(resolve => setTimeout(resolve, 500));
+                    const retryToken = getToken();
+                    if (!retryToken) return router.push('/login');
+                }
                 const data = await res.json();
                 setTotalKT(data.totalKT || 0);
             } catch { /* ignore */ }

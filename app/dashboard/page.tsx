@@ -48,8 +48,18 @@ export default function DashboardPage() {
     const router = useRouter();
 
     const loadData = async () => {
-        const token = getToken();
-        if (!token) return router.push('/login');
+        console.log('=== KALANTARK AUTH DEBUG ===');
+        console.log('timestamp:', new Date().toISOString());
+        console.log('localStorage token:', localStorage.getItem('kalantark_token'));
+        console.log('cookie raw:', document.cookie);
+        console.log('getToken() result:', getToken());
+        console.log('===========================');
+        let token = getToken();
+        if (!token) {
+            await new Promise(resolve => setTimeout(resolve, 500));
+            token = getToken();
+            if (!token) return router.push('/login');
+        }
         // Don't block render with loading if we already have a token (app reopen)
 
         const catRes = await fetchWithAuth('/api/categories');

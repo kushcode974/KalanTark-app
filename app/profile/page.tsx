@@ -57,8 +57,12 @@ export default function ProfilePage() {
     });
 
     const loadData = async () => {
-        const token = getToken();
-        if (!token) return router.push('/login');
+        let token = getToken();
+        if (!token) {
+            await new Promise(resolve => setTimeout(resolve, 500));
+            token = getToken();
+            if (!token) return router.push('/login');
+        }
 
         try {
             const statsRes = await fetchWithAuth('/api/profile/stats');

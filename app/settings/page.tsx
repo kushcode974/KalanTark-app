@@ -40,10 +40,14 @@ export default function SettingsPage() {
     const [showPasswordSection, setShowPasswordSection] = useState(false);
 
     useEffect(() => {
-        const token = getToken();
-        if (!token) { router.push('/login'); return; }
-
         const loadSettings = async () => {
+            let token = getToken();
+            if (!token) {
+                await new Promise(resolve => setTimeout(resolve, 500));
+                token = getToken();
+                if (!token) { router.push('/login'); return; }
+            }
+
             const catRes = await fetchWithAuth('/api/categories');
             if (catRes.ok) {
                 const data = await catRes.json();

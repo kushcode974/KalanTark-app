@@ -473,6 +473,9 @@ export default function LoginPage() {
             const data = await res.json();
             if (res.ok) {
                 localStorage.setItem('kalantark_token', data.token);
+                document.cookie = `kalantark_token=${data.token}; path=/; max-age=2592000; SameSite=Lax`;
+                console.log('LOGIN — token saved to localStorage:', localStorage.getItem('kalantark_token') ? 'YES' : 'NO');
+                console.log('LOGIN — cookie set:', document.cookie.includes('kalantark_token') ? 'YES' : 'NO');
                 setLoginSuccess(true);
                 setTimeout(() => router.push('/dashboard'), 1200);
             } else {

@@ -21,11 +21,8 @@ export function getToken(): string | null {
 export async function fetchWithAuth(url: string, options: RequestInit = {}) {
     const token = getToken();
 
-    const headers = new Headers(options.headers || {});
-    headers.set('Content-Type', 'application/json');
-    if (token) {
-        headers.set('Authorization', `Bearer ${token}`);
-    }
+    try {
+        let response = await executeFetch();
 
     try {
         const response = await fetch(url, { ...options, headers });

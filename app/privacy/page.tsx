@@ -1,6 +1,5 @@
-import Link from 'next/link';
-import { ArrowLeft } from 'lucide-react';
 import { Metadata } from 'next';
+import { BackButton } from '@/components/BackButton';
 
 export const metadata: Metadata = {
     title: 'Privacy Policy | KalanTark',
@@ -17,9 +16,7 @@ export default function PrivacyPage() {
 
             <div className="max-w-3xl mx-auto relative z-10">
                 <div className="mb-10">
-                    <Link href="/" className="inline-flex items-center gap-2 text-[#4a9eff] hover:text-white transition-colors text-[11px] font-bold tracking-[0.2em] uppercase">
-                        <ArrowLeft size={16} /> Return to App
-                    </Link>
+                    <BackButton />
                 </div>
                 
                 <h1 className="text-3xl md:text-5xl font-black uppercase tracking-widest mb-12 text-transparent bg-clip-text bg-gradient-to-r from-white to-[#4a9eff]">

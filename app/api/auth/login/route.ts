@@ -5,6 +5,8 @@ import { signToken } from '@/lib/auth';
 import { rateLimit } from '@/lib/rateLimit';
 import { loginSchema } from '@/lib/validations';
 
+export const dynamic = 'force-dynamic';
+
 export async function POST(req: Request) {
     try {
         const ip = req.headers.get('x-forwarded-for') || 'unknown';
